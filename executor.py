@@ -1,6 +1,6 @@
 import re
 
-import androguard.core.bytecodes.dvm as dvm
+from androguard.core import dex
 
 class SmaliExecutor(object):
     def __init__(self):
@@ -31,9 +31,9 @@ class WriteToExecutor(SmaliExecutor):
     def const(self, inst):
         operands = inst.get_operands()
         assert len(operands) == 2
-        assert operands[0][0] == dvm.OPERAND_REGISTER
+        assert operands[0][0] == dex.Operand.REGISTER
         reg = operands[0][1]
-        assert operands[1][0] == dvm.OPERAND_LITERAL
+        assert operands[1][0] == dex.Operand.LITERAL
         val = operands[1][1]
         self.registers[reg] = val
 
@@ -48,7 +48,7 @@ class WriteToExecutor(SmaliExecutor):
             return
 
         operands = inst.get_operands()
-        assert operands[1][0] == dvm.OPERAND_REGISTER
+        assert operands[1][0] == dex.Operand.REGISTER
         reg = operands[1][1]
 
         assert reg in self.registers

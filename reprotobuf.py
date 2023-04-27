@@ -1,17 +1,15 @@
+import os
 import sys
-from pprint import pprint
-
-# read apk
-#import androguard.core.bytecodes.apk as apk
-#a = apk.APK(sys.argv[1])
-
-import androguard.core.bytecodes.dvm as dvm
-from androguard.core.analysis.analysis import *
 import inflection
-
 import executor
 import descriptors
 
+from pprint import pprint
+from androguard.core import dex
+from androguard.core.analysis.analysis import *
+from loguru import logger
+
+logger.disable('androguard')
 
 # XXX must be library for this
 def has_field_name(s):
@@ -23,8 +21,8 @@ def has_field_name(s):
 
 class Reprotobuf(object):
     def __init__(self, classes_dex):
-        self.dvm = dvm.DalvikVMFormat(classes_dex)
-        self.vma = uVMAnalysis(self.dvm)
+        self.dvm = dex.DEX(classes_dex)
+        self.vma = Analysis(self.dvm)
         self.tree = {}
         self.files = {}
 
@@ -158,6 +156,9 @@ class Reprotobuf(object):
                     properties['package'])
 
     def output(self):
+        if not os.path.isdir('./output'):
+            os.mkdir('./output')
+
         for properties in self.files.values():
             with open('./output/' + properties['name'], 'w') as f:
                 f.write('syntax = "proto2";\n\n')
